@@ -8,18 +8,21 @@
 <script type="application/processing" canvasid="featherCanvas">
 
 // Define global variables: feather type, and feather position (x&y)
+float HEIGHT = 550.0;
+float FEATHERHEIGHT = HEIGHT - 50;
+float WIDTH = 900.0;
 float featherType = 1; // 0-1. 0=flight feather. 1=down. Variable describes connection between this feather and the last
 float[] featherPosition = {0,0}; // will be updated with each click to set the position(x) and height(y) of the new feather.
 String instructions = "         ←← Vane                                                           ↕     Click above this line to make a feather, below it to clear    ↕                                                                               Down →→             ";
  
 void setup() {
-  size(900,700);
+  size(WIDTH,HEIGHT);
   background(0);
   stroke(255,80);
   smooth();
   
   // print instructions
-  fill(200); text(instructions, 0, 650, 900, 20); fill(0);
+  fill(200); text(instructions, 0, FEATHERHEIGHT, WIDTH, 20); fill(0);
 }
 
 void draw() {
@@ -52,7 +55,7 @@ void mousePressed() {
   featherPosition[0] = float(mouseX);
   featherPosition[1] = float(mouseY);
   
-  if (mouseY > 650) {background(0);}
+  if (mouseY > FEATHERHEIGHT) {background(0);redraw();}
   else {drawFeather();}
 }
 
@@ -61,16 +64,16 @@ void drawFeather() {
   float startAngle = PI/8;
   float addAngle = 0;
   
-  int totalBarbs = int((650-featherPosition[1])/2); // total number of barbs is in proportion to the feather height & type.
-  if (featherPosition[0] > 400) {totalBarbs += random(1,3)*((featherPosition[0]-400)/50)*(650-featherPosition[1])/50; }
+  int totalBarbs = int((FEATHERHEIGHT-featherPosition[1])/2); // total number of barbs is in proportion to the feather height & type.
+  if (featherPosition[0] > FEATHERHEIGHT*2/3) {totalBarbs += random(1,3)*((featherPosition[0]-FEATHERHEIGHT*2/3)/50)*(FEATHERHEIGHT-featherPosition[1])/50; }
   
   int maxRotatingBarbs = 100;
   float[] barbcurve = {3, 0, 25, -25, 75, 25, 100, 0};
   
   // Overall shape of feather:
-  float r1 = 650-totalBarbs*2; // second control point Y value
+  float r1 = FEATHERHEIGHT-totalBarbs*2; // second control point Y value
   float r2 = featherPosition[0]+random(-50,50); // end point X value
-  float[] rachiscurve = {featherPosition[0], 650, featherPosition[0], 650-(650-featherPosition[1])/3, featherPosition[0],  650-2*(650-featherPosition[1])/3, r2, featherPosition[1]};
+  float[] rachiscurve = {featherPosition[0], FEATHERHEIGHT, featherPosition[0], FEATHERHEIGHT-(FEATHERHEIGHT-featherPosition[1])/3, featherPosition[0],  FEATHERHEIGHT-2*(FEATHERHEIGHT-featherPosition[1])/3, r2, featherPosition[1]};
   
   // Characteristics for barbs:
   float barbCurviness = 1; // 0-1. At 0, the barb should appear straight
@@ -91,7 +94,7 @@ void drawFeather() {
     //float x = bezierPoint(450, 450, 450, r2, t);
     //float y = bezierPoint(650, 500, r1, 650-totalBarbs*2, t);
     float x = bezierPoint(featherPosition[0],  featherPosition[0], featherPosition[0], r2, t);
-    float y = bezierPoint(650, 650-(650-featherPosition[1])/3, 650-2*(650-featherPosition[1])/3, featherPosition[1], t);    
+    float y = bezierPoint(FEATHERHEIGHT, FEATHERHEIGHT-(FEATHERHEIGHT-featherPosition[1])/3, FEATHERHEIGHT-2*(FEATHERHEIGHT-featherPosition[1])/3, featherPosition[1], t);    
     translate(x,y);
     // rotations occur differently for different feathers.
     
@@ -146,6 +149,6 @@ void drawFeather() {
 }
 
 
-</script><canvas width="800" height="500" id="featherCanvas"></canvas></p>
+</script><canvas id="featherCanvas"></canvas></p>
 </body>
 </html>
